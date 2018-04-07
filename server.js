@@ -32,16 +32,19 @@ app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url;
   try {
     const hostname = new URL(url).hostname;
-    dns.lookup(hostname, err => {
-      if (err) {
-        return res.status(404).send(`Couldn't resolve hostname: ${hostname}`);
-      }
-      ShortURL.create({ url }, (err, shortURL) => {
-        if (err) {
-          return res.status(500).send(err);
-        }
-        Counter.findByIdAndUpdate('shorturls', { $inc: (err, data) => {
-          return res.json({ original_url: url, short_url: shortURL._id });
+    dns.lookup(hostname, err => (
+      err 
+        ? res.status(404).send(`Couldn't resolve hostname: ${hostname}`)
+        : ShortURL.create({ url }, (err, shortURL) => (
+          err 
+            ? res.status(500).send(err)
+            : Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, data) => (
+              err
+                ? res.status(500).end()
+                : res.json({ original_url: url, short_url: shortURL._id })
+            ))
+          ))
+      ))
         });
         
       });
