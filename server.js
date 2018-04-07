@@ -22,6 +22,7 @@ const ShortURL = mongoose.model('ShortURL', new mongoose.Schema({
 }));
 
 const Counter = mongoose.model('Counter', new mongoose.Schema({
+  _id: String,
   count: Number,
 }));
 
