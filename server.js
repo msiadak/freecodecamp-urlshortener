@@ -41,14 +41,10 @@ app.post('/api/shorturl/new', (req, res) => {
             : Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, data) => (
               err
                 ? res.status(500).end()
-                : res.json({ original_url: url, short_url: shortURL._id })
+                : res.json({ original_url: url, short_url: data.count })
             ))
           ))
-      ))
-        });
-        
-      });
-    });
+      ));
   } catch (e) {
     return res.status(404).send(`Not a valid URL: ${url}`);
   }
