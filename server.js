@@ -40,7 +40,10 @@ app.post('/api/shorturl/new', (req, res) => {
         if (err) {
           return res.status(500).send(err);
         }
-        return res.json({ original_url: url, short_url: shortURL._id });
+        Counter.findByIdAndUpdate('shorturls', { $inc: (err, data) => {
+          return res.json({ original_url: url, short_url: shortURL._id });
+        });
+        
       });
     });
   } catch (e) {
