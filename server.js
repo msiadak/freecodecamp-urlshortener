@@ -6,18 +6,16 @@ const { URL } = require('url');
 const express = require('express');
 const mongo = require('mongodb');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 
+const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-
 const port = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGOLAB_URI);
-
-/*** DB objects ***/
 const { ShortURL, Counter } = require('./model');
+
+mongoose.connect(process.env.MONGOLAB_URI, { useMongoClient: true });
 
 /*** Middleware ***/
 app.use(cors());
@@ -32,18 +30,22 @@ app.get('/', (req, res) => {
 // Create new shortened URL
 app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url;
-  const hostname = new URL(url).hostname;
-  dns.lookup(hostname, err => {
-    if (err) {
-      return res.status(500).send(`Couldn't resolve hostname: ${hostname}`);
-    }
-    ShortURL.create({ url }, (err, shortURL) => {
+  try {
+    const hostname = new URL(url).hostname;
+    dns.lookup(hostname, err => {
       if (err) {
-        return res.status(500).send(err);
+        return res.status(404).send(`Couldn't resolve hostname: ${hostname}`);
       }
-      return res.json({ original_url: url, short_url: shortURL._id });
+      ShortURL.create({ url }, (err, shortURL) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        return res.json({ original_url: url, short_url: shortURL._id });
+      });
     });
-  });
+  } catch (e) {
+    return res.status(404).send(`Not a valid URL: ${url}`);
+  }
 });
 
 // Retrieve shortened URL
