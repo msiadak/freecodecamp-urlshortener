@@ -16,9 +16,13 @@ const port = process.env.PORT || 3000;
 
 mongoose.connect(process.env.MONGOLAB_URI);
 
-/*** DB object ***/
+/*** DB objects ***/
 const ShortURL = mongoose.model('ShortURL', new mongoose.Schema({
   url: String,
+}));
+
+const Counter = mongoose.model('Counter', new mongoose.Schema({
+  count: Number,
 }));
 
 /*** Middleware ***/
