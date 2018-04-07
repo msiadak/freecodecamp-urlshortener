@@ -17,14 +17,7 @@ const port = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGOLAB_URI);
 
 /*** DB objects ***/
-const ShortURL = mongoose.model('ShortURL', new mongoose.Schema({
-  url: String,
-}));
-
-const Counter = mongoose.model('Counter', new mongoose.Schema({
-  _id: String,
-  count: Number,
-}));
+const { ShortURL, Counter } = require('./model');
 
 /*** Middleware ***/
 app.use(cors());
