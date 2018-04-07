@@ -41,16 +41,21 @@ app.post('/api/shorturl/new', (req, res) => {
     }
     ShortURL.create({ url }, (err, shortURL) => {
       if (err) {
-        return res.status(500).send("Couldn't create
+        return res.status(500).send(err);
       }
+      return res.json({ original_url: url, short_url: shortURL._id });
     });
-    return res.json({ original_url: url, short_url: 1 });
   });
 });
 
 // Retrieve shortened URL
 app.get('/api/shorturl/:id', (req, res) => {
-  
+  ShortURL.findById(req.params.id, (err, shortURL) => {
+    if (err) {
+      return res.status(400).end();
+    }
+    res.redirect(shortURL.url);
+  });
 });
 
 
