@@ -42,7 +42,7 @@ app.post('/api/shorturl/new', (req, res) => {
     }
     Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, counter) => {
       if (err) {
-        return res.status(500).send(err);
+        return res.status(500).json({ error: err });
       }
       const count = counter.count + 1;
       ShortURL.create({ _id: counter.count + 1, url }, (err, shortURL) => {
