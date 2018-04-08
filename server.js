@@ -30,8 +30,9 @@ app.get('/', (req, res) => {
 // Create new shortened URL
 app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url;
+  let hostname;
   try {
-    const hostname = new URL(url).hostname;
+    hostname = new URL(url).hostname;
   } catch (e) {
     return res.status(404).json({ error: 'Invalid URL' });
   }
@@ -51,13 +52,6 @@ app.post('/api/shorturl/new', (req, res) => {
         res.json({ original_url: url, short_url: counter.count + 1 });
       });
     });
-    
-    ShortURL.create({ url }, (err, shortURL) => {
-      if (err) {
-        return res.status(500).send(err);
-      }
-      
-    });
   }); 
 });
 
@@ -65,7 +59,7 @@ app.post('/api/shorturl/new', (req, res) => {
 app.get('/api/shorturl/:id', (req, res) => {
   ShortURL.findById(req.params.id, (err, shortURL) => {
     if (err) {
-      return res.status(400).end();
+      return res.status(404).end();
     }
     res.redirect(shortURL.url);
   });
