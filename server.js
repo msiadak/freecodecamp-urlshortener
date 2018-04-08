@@ -1,7 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
-const dns = Promise.promisifyAll(require('dns'));
+const dns = require('dns');
 const { URL } = require('url');
 
 const express = require('express');
@@ -33,22 +32,25 @@ app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url;
   try {
     const hostname = new URL(url).hostname;
-    dns.lookupAsync(hostname, err => (
-      err 
-        ? res.status(404).send(`Couldn't resolve hostname: ${hostname}`)
-        : ShortURL.create({ url }, (err, shortURL) => (
-          err 
-            ? res.status(500).send(err)
-            : Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, data) => (
-              err
-                ? res.status(500).end()
-                : res.json({ original_url: url, short_url: data.count })
-            ))
-          ))
-      ));
   } catch (e) {
-    return res.status(404).send(`Not a valid URL: ${url}`);
+    return res.status(404).end();
   }
+  dns.lookup(hostname, err => {
+    if (err) {
+      return res.status(404).send(`Couldn't resolve hostname: ${hostname}`);
+    }
+    ShortURL.create({ url }, (err, shortURL) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, data) => {
+        if (err) {
+          return res.status(500).end();
+        }
+        res.json({ original_url: url, short_url: data.count });
+      });
+    });
+  }); 
 });
 
 // Retrieve shortened URL
