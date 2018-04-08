@@ -1,4 +1,5 @@
 dependencies:
+  bluebird: 3.5.1
   body-parser: 1.18.2
   cors: 2.8.4
   express: 5.0.0-alpha.6
@@ -28,6 +29,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-eRQg1/VR7qKJdFOop3ZT+WYG1nw=
+  /bluebird/3.5.1:
+    dev: false
+    resolution:
+      integrity: sha512-MKiLiV+I1AA596t9w1sQJ8jkiSr5+ZKi0WKrYGUn6d1Fx+Ij4tIj+m2WMQSGczs5jZVxV339chE8iwk6F64wjA==
   /body-parser/1.18.2:
     dependencies:
       bytes: 3.0.0
@@ -613,6 +618,7 @@ registry: 'https://registry.npmjs.org/'
 shrinkwrapMinorVersion: 4
 shrinkwrapVersion: 3
 specifiers:
+  bluebird: ^3.5.1
   body-parser: ^1.15.2
   cors: ^2.8.1
   express: ^5.0.0-alpha.2
