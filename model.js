@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const ShortURL = mongoose.model('ShortURL', new mongoose.Schema({
+  _id: Number,
   url: String,
 }));
 

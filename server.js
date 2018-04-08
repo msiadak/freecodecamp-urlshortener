@@ -33,22 +33,30 @@ app.post('/api/shorturl/new', (req, res) => {
   try {
     const hostname = new URL(url).hostname;
   } catch (e) {
-    return res.status(404).end();
+    return res.status(404).json({ error: 'Invalid URL' });
   }
   dns.lookup(hostname, err => {
     if (err) {
-      return res.status(404).send(`Couldn't resolve hostname: ${hostname}`);
+      return res.status(404).json({ error: `Couldn't resolve hostname: ${hostname}` });
     }
+    Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, counter) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      const count = counter.count + 1;
+      ShortURL.create({ _id: counter.count + 1, url }, (err, shortURL) => {
+        if (err) {
+          return res.status(500).json({ error: err });
+        }
+        res.json({ original_url: url, short_url: counter.count + 1 });
+      });
+    });
+    
     ShortURL.create({ url }, (err, shortURL) => {
       if (err) {
         return res.status(500).send(err);
       }
-      Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, data) => {
-        if (err) {
-          return res.status(500).end();
-        }
-        res.json({ original_url: url, short_url: data.count });
-      });
+      
     });
   }); 
 });
