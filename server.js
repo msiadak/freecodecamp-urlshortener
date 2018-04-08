@@ -1,6 +1,7 @@
 'use strict';
 
-const dns = require('dns');
+const Promise = require('bluebird');
+const dns = Promise.promisifyAll(require('dns'));
 const { URL } = require('url');
 
 const express = require('express');
@@ -32,7 +33,7 @@ app.post('/api/shorturl/new', (req, res) => {
   const url = req.body.url;
   try {
     const hostname = new URL(url).hostname;
-    dns.lookup(hostname, err => (
+    dns.lookupAsync(hostname, err => (
       err 
         ? res.status(404).send(`Couldn't resolve hostname: ${hostname}`)
         : ShortURL.create({ url }, (err, shortURL) => (
