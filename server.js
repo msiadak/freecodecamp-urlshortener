@@ -40,13 +40,14 @@ app.post('/api/shorturl/new', (req, res) => {
     if (err) {
       return res.status(404).json({ error: `Couldn't resolve hostname: ${hostname}` });
     }
-    Counter.findByIdAndUpdate('shorturls', { $inc: 'count' }, (err, counter) => {
+    Counter.findByIdAndUpdate('shorturls', { $inc: { 'count': 1 } }, (err, counter) => {
       if (err) {
         return res.status(500).json({ error: err });
       }
       const count = counter.count + 1;
       ShortURL.create({ _id: counter.count + 1, url }, (err, shortURL) => {
         if (err) {
+          console.log(err);
           return res.status(500).json({ error: err });
         }
         res.json({ original_url: url, short_url: counter.count + 1 });
